@@ -8,7 +8,7 @@ def make_model():
         keras.layers.Conv2D(input_shape=[28,28,1], filters=3, kernel_size=[5, 5], use_bias=True,
                            activation='relu', padding='VALID'),
         keras.layers.MaxPool2D(pool_size=[2, 2]),
-        keras.layers.SeparableConv2D(filters=3, kernel_size=[3, 3], use_bias=True,
+        keras.layers.SeparableConv2D(filters=6, kernel_size=[3, 3], use_bias=True,
                                     padding='same', activation='relu'),
         keras.layers.MaxPool2D(pool_size=[2, 2]),
         keras.layers.Flatten(),
@@ -22,6 +22,7 @@ def make_model():
     return model
 
 def main():
+    NUM_EPOCHS = 50
     model = make_model()
 
     for layer in model.layers:
@@ -43,7 +44,7 @@ def main():
     test_images.resize((10000, 28, 28, 1))
     print(train_images.shape)
 
-    model.fit(train_images, train_labels, epochs=50)
+    model.fit(train_images, train_labels, epochs=NUM_EPOCHS)
     model.save_weights("./keras_model")
 
     test_loss, test_acc = model.evaluate(test_images, test_labels)
