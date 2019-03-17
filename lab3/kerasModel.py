@@ -5,8 +5,8 @@ from tensorflow import keras
 
 def make_model():
     model = keras.Sequential([
-        keras.layers.Conv2D(input_shape=[28,28,1], filters=3, kernel_size=[5, 5], use_bias=True,
-                           activation='relu', padding='VALID'),
+        keras.layers.Conv2D(input_shape=[28,28,1], filters=3, kernel_size=[7, 7], use_bias=True,
+                           activation='relu', padding='SAME', dilation_rate=2),
         keras.layers.MaxPool2D(pool_size=[2, 2]),
         keras.layers.SeparableConv2D(filters=6, kernel_size=[3, 3], use_bias=True,
                                     padding='same', activation='relu'),
