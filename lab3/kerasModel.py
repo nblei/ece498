@@ -22,6 +22,24 @@ def make_sequential_model():
 
     return model
 
+def make_only_dense():
+    model = keras.Sequential([
+        keras.layers.Flatten(input_shape=[28,28,1]),
+        #keras.layers.BatchNormalization(),
+        keras.layers.Dense(28*28, activation='relu',use_bias=False),
+        #keras.layers.BatchNormalization(),
+        keras.layers.Dense(28*28, activation='relu',use_bias=False),
+        #keras.layers.BatchNormalization(),
+        keras.layers.Dense(50, activation='relu',use_bias=False),
+        #keras.layers.BatchNormalization(),
+        keras.layers.Dense(10, activation='softmax')
+    ])
+    opt = keras.optimizers.Adam()
+    model.compile(optimizer=opt, loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+    return model
+
 def make_inception_model():
     NUM_FEATURES=3
     input_img = keras.layers.Input(shape=(28, 28, 1))
@@ -44,8 +62,38 @@ def make_inception_model():
               metrics=['accuracy'])
     return model
 
+def make_xception_model():
+    DROP_RATE = 0.3
+    NUM_FEATURES=2
+    input_img = keras.layers.Input(shape=(28, 28, 1))
+    input_processing = keras.layers.Conv2D(NUM_FEATURES, (3, 3), padding='same', activation='relu')(input_img)
+    input_processing = keras.layers.BatchNormalization()(input_processing)
+
+    tower_1 = keras.layers.Conv2D(NUM_FEATURES, (1, 1), padding='same', activation='relu')(input_processing)
+    tower_1 = keras.layers.SeparableConv2D(NUM_FEATURES, (3, 3), padding='same', activation='relu')(tower_1)
+
+    tower_2 = keras.layers.Conv2D(NUM_FEATURES, (1,1), padding='same', activation='relu')(input_processing)
+    tower_2 = keras.layers.SeparableConv2D(NUM_FEATURES, (5,5), padding='same', activation='relu')(tower_2)
+
+    tower_3 = keras.layers.MaxPooling2D((3,3), strides=(1,1), padding='same')(input_processing)
+    tower_3 = keras.layers.Conv2D(NUM_FEATURES, (1,1), padding='same', activation='relu')(tower_3)
+
+    output = keras.layers.concatenate([tower_1, tower_2, tower_3], axis=3)
+    output = keras.layers.Flatten()(output)
+    output = keras.layers.Dropout(DROP_RATE)(output)
+
+    #dense = keras.layers.Dense(100, activation='relu')(output)
+    #dense = keras.layers.Dense(50, activation='relu')(output)
+
+    out = keras.layers.Dense(10, activation='softmax')(output)
+    model = keras.models.Model(inputs=input_img, outputs=out)
+    opt = keras.optimizers.Adam()
+    model.compile(optimizer=opt, loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+    return model
+
 def make_model():
-    return make_inception_model()
+    return make_xception_model()
 
 
 def main():
