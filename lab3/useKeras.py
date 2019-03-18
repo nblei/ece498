@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
 import time
@@ -17,6 +17,7 @@ class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',
 
 data, data_id = get_testset(TEAMNAME)
 
+_ = model.predict(data)
 start = time.time()
 preds = model.predict(data)
 
