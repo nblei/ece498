@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 from tensorflow import keras
 
-def make_model():
+def make_sequential_model():
     model = keras.Sequential([
         keras.layers.Conv2D(input_shape=[28,28,1], filters=3, kernel_size=[7, 7], use_bias=True,
                            activation='relu', padding='SAME', dilation_rate=3),
@@ -21,6 +21,32 @@ def make_model():
               metrics=['accuracy'])
 
     return model
+
+def make_inception_model():
+    NUM_FEATURES=3
+    input_img = keras.layers.Input(shape=(28, 28, 1))
+    tower_1 = keras.layers.Conv2D(NUM_FEATURES, (1, 1), padding='same', activation='relu')(input_img)
+    tower_1 = keras.layers.Conv2D(NUM_FEATURES, (3, 3), padding='same', activation='relu')(tower_1)
+
+    tower_2 = keras.layers.Conv2D(NUM_FEATURES, (1,1), padding='same', activation='relu')(input_img)
+    tower_2 = keras.layers.Conv2D(NUM_FEATURES, (5,5), padding='same', activation='relu')(tower_2)
+
+    tower_3 = keras.layers.MaxPooling2D((3,3), strides=(1,1), padding='same')(input_img)
+    tower_3 = keras.layers.Conv2D(NUM_FEATURES, (1,1), padding='same', activation='relu')(tower_3)
+
+    output = keras.layers.concatenate([tower_1, tower_2, tower_3], axis=3)
+    output = keras.layers.Flatten()(output)
+
+    out = keras.layers.Dense(10, activation='softmax')(output)
+    model = keras.models.Model(inputs=input_img, outputs=out)
+    opt = keras.optimizers.Adam()
+    model.compile(optimizer=opt, loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+    return model
+
+def make_model():
+    return make_inception_model()
+
 
 def main():
     NUM_EPOCHS = 20
