@@ -80,7 +80,6 @@ def make_xception_model():
 
     output = keras.layers.concatenate([tower_1, tower_2, tower_3], axis=3)
     output = keras.layers.Flatten()(output)
-    output = keras.layers.Dropout(DROP_RATE)(output)
 
     #dense = keras.layers.Dense(100, activation='relu')(output)
     #dense = keras.layers.Dense(50, activation='relu')(output)
