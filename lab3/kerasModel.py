@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import tensorflow as tf
 import numpy as np
 from tensorflow import keras
@@ -21,6 +21,26 @@ def make_sequential_model():
               metrics=['accuracy'])
 
     return model
+
+def make_sequential_dwise_model():
+    model = keras.Sequential([
+        keras.layers.Conv2D(input_shape=[28,28,1], filters=3, kernel_size=[7, 7], use_bias=True,
+                           activation='relu', padding='SAME', dilation_rate=3),
+        keras.layers.MaxPool2D(pool_size=[2, 2]),
+        keras.layers.SeparableConv2D(filters=6, kernel_size=[3, 3], use_bias=True,
+                                    padding='same', activation='relu'),
+        keras.layers.MaxPool2D(pool_size=[2, 2]),
+        keras.layers.Flatten(),
+        keras.layers.Dense(100, activation='relu', use_bias=True),
+        keras.layers.Dense(50, activation='relu', use_bias=True),
+        keras.layers.Dense(10, activation='softmax', use_bias=True)
+    ])
+    opt = keras.optimizers.Adam()
+    model.compile(optimizer=opt, loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+    return model
+
 
 def make_only_dense():
     model = keras.Sequential([
@@ -92,11 +112,11 @@ def make_xception_model():
     return model
 
 def make_model():
-    return make_xception_model()
+    return make_inception_model()
 
 
 def main():
-    NUM_EPOCHS = 20
+    NUM_EPOCHS = 5
     model = make_model()
 
     for layer in model.layers:
